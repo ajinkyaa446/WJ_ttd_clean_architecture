@@ -14,18 +14,14 @@ class MovieListCubit extends Cubit<MovieListState> {
   MovieListCubit(this.getMovies, this.getLocalData) : super(const MovieListState.Empty());
 
   Future getAPIResponse() async {
-    try {
-      final result = await getMovies(MovieListParams(url: Constants.url));
-      result.fold((_) => emit(const MovieListState.Error()), (result) {
-        if (result == null) {
-          emit(const MovieListState.Empty());
-        } else {
-          emit(MovieListState.Loaded(result));
-        }
-      });
-    } catch (e) {
-      emit(MovieListState.Error());
-    }
+    final result = await getMovies(MovieListParams(url: Constants.url));
+    result.fold((_) => emit(const MovieListState.Error()), (result) {
+      if (result == null) {
+        emit(const MovieListState.Empty());
+      } else {
+        emit(MovieListState.Loaded(result));
+      }
+    });
   }
 
   Future getCharacterResponse(int id) async {
