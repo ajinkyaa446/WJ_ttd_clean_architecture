@@ -30,15 +30,15 @@ jobs:
         with:
           channel: "stable"
       - run: flutter pub get
-      - run: flutter build apk
+      - run: flutter build apk --release
       - uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: build/app/outputs/apk/release/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
       - name: upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{secrets.APPID}}
           token: ${{secrets.TOKEN}}
           groups: app_QA_team
-          file: build/app/outputs/apk/release/app-release.apk
+          file: build/app/outputs/flutter-apk/app-release.apk
