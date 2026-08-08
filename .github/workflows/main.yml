@@ -131,18 +131,18 @@ jobs:
       - name: Export iOS IPA
         run: |
           cat > ExportOptions.plist <<'EOF'
-          <?xml version="1.0" encoding="UTF-8" encoding="UTF-8"?>
+          <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
+            <key>compileBitcode</key>
+            <false/>
             <key>method</key>
-            <string>ad-hoc</string>
+            <string>development</string>
             <key>signingStyle</key>
             <string>automatic</string>
             <key>stripSwiftSymbols</key>
             <true/>
-            <key>teamID</key>
-            <string></string>
             <key>destination</key>
             <string>export</string>
           </dict>
