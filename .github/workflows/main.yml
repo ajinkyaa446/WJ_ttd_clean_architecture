@@ -127,9 +127,13 @@ jobs:
           name: ios-app
           path: build/ios-artifacts/Runner.app.zip
       - name: upload iOS artifact to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{secrets.APPID}}
-          token: ${{secrets.TOKEN}}
-          groups: app_QA_team
-          file: build/ios-artifacts/Runner.app.zip
+        env:
+          FIREBASE_TOKEN: ${{ secrets.TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.APPID }}
+          FIREBASE_GROUPS: app_QA_team
+        run: |
+          npm install -g firebase-tools
+          firebase appdistribution:distribute build/ios-artifacts/Runner.app.zip \
+            --app "$FIREBASE_APP_ID" \
+            --token "$FIREBASE_TOKEN" \
+            --groups "$FIREBASE_GROUPS"
