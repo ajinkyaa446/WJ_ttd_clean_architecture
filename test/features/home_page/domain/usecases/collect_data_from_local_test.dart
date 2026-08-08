@@ -1,4 +1,4 @@
-import 'package:flutter_assignment/features/home_page/domain/usecases/collectDataFromLocal.dart';
+import 'package:flutter_assignment/features/home_page/domain/usecases/collect_data_from_local.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

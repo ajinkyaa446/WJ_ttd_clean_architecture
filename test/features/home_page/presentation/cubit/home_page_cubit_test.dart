@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_assignment/features/home_page/data/models/star_war_model.dart';
-import 'package:flutter_assignment/features/home_page/domain/usecases/collectDataFromAPI.dart';
-import 'package:flutter_assignment/features/home_page/domain/usecases/collectDataFromLocal.dart';
+import 'package:flutter_assignment/features/home_page/domain/usecases/collect_data_from_api.dart';
+import 'package:flutter_assignment/features/home_page/domain/usecases/collect_data_from_local.dart';
 import 'package:flutter_assignment/features/home_page/presentation/cubit/movie_list_cubit.dart';
 import 'package:flutter_assignment/features/home_page/presentation/cubit/movie_list_state.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +15,7 @@ import '../../../../constants/test_constants.dart';
 import '../../../../fixtures/fixtures.dart';
 import 'home_page_cubit_test.mocks.dart';
 
-@GenerateMocks([], customMocks: [MockSpec<CollectDataFromAPI>(as: #MockMoviesRemoteData, returnNullOnMissingStub: true), MockSpec<CollectDataFromLocal>(as: #MockMoviesLocalData)])
+@GenerateMocks([], customMocks: [MockSpec<CollectDataFromAPI>(as: #MockMoviesRemoteData), MockSpec<CollectDataFromLocal>(as: #MockMoviesLocalData)])
 void main() {
   late MovieListCubit cubit;
   late MockMoviesRemoteData mockMoviesListRemoteData;
@@ -39,23 +39,23 @@ void main() {
       act: (MovieListCubit newCubit) async {
         await newCubit.getAPIResponse();
       },
-      expect: () => [MovieListState.Loaded(modelData)],
+      expect: () => [MovieListState.loaded(modelData)],
     );
 
-    // Cubit data Empty test
+    // Cubit data initial test
     blocTest<MovieListCubit, MovieListState>(
       TestConstants.movieEmptyStateTest,
       build: () => cubit,
-      act: (newCubit) => newCubit.emit(const MovieListState.Empty()),
-      expect: () => <MovieListState>[const MovieListState.Empty()],
+      act: (newCubit) => newCubit.emit(const MovieListState.initial()),
+      expect: () => <MovieListState>[const MovieListState.initial()],
     );
 
-    // Cubit data Empty test
+    // Cubit data error test
     blocTest<MovieListCubit, MovieListState>(
       TestConstants.moviesErrorStateTest,
       build: () => cubit,
-      act: (newCubit) => newCubit.emit(const MovieListState.Error()),
-      expect: () => <MovieListState>[const MovieListState.Error()],
+      act: (newCubit) => newCubit.emit(const MovieListState.error()),
+      expect: () => <MovieListState>[const MovieListState.error()],
     );
   });
 }

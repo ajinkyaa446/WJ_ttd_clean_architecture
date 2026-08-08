@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_assignment/constants/constants.dart';
-import 'package:flutter_assignment/features/home_page/domain/usecases/collectDataFromAPI.dart';
+import 'package:flutter_assignment/features/home_page/domain/usecases/collect_data_from_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

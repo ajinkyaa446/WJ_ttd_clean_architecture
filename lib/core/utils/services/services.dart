@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../../../constants/constants.dart';
 import '../../../features/character_page/data/models/character_model.dart';
+import '../../../features/home_page/data/models/movies_list/movies_list.dart';
 import '../../../features/home_page/data/models/star_war_model.dart';
 import '../../error/exceptions.dart';
 import '../../error/failure.dart';
@@ -30,26 +31,31 @@ class APIServices {
 
   ///Fetching Movies list Response from the server
   Future<Either<Failure, StarWarMoviesModel>> fetchAllMovies(String url) async {
-    final response = await client.get(Uri.parse(url), headers: {'Content-type': 'application/json'});
     try {
+      final response = await client.get(Uri.parse(url), headers: {'Content-type': 'application/json'});
       if (response.statusCode == 200) {
-        StarWarMoviesModel model = StarWarMoviesModel.fromJson(json.decode(response.body));
+        final decodedData = json.decode(response.body);
+        StarWarMoviesModel model;
+        if (decodedData is List) {
+          model = StarWarMoviesModel(
+            count: decodedData.length,
+            results: List<Results>.from(decodedData.map((x) => Results.fromJson(x))),
+          );
+        } else {
+          model = StarWarMoviesModel.fromJson(decodedData);
+        }
 
         /// Inserting data to local database tables
-        var result = await DatabaseHelper.instance.insertDataToMovies(model);
+        await DatabaseHelper.instance.insertDataToMovies(model);
         await DatabaseHelper.instance.insertDataResults(model);
         await DatabaseHelper.instance.insertDataCharacters(model);
 
-        if (result >= 1) {
-          return Right(model);
-        } else {
-          return Left(CacheFailure("Database Exception"));
-        }
+        return Right(model);
       } else {
-        throw ServerExceptions(Constants.serverFailureMessage);
+        return Left(ServerFailure("Server Error: ${response.statusCode}"));
       }
     } catch (e) {
-      return Left(ServerFailure(Constants.serverFailureMessage));
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

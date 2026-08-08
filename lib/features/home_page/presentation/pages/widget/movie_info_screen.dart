@@ -1,50 +1,93 @@
 import 'package:flutter/material.dart';
-
-import '../../../../../commons/widgets/size.dart';
-import '../../../../../commons/widgets/widget.dart';
-import '../../../../../constants/constants.dart';
+import 'package:flutter_assignment/commons/widgets/star_wars_image.dart';
 
 class MovieInfoScreen extends StatelessWidget {
   final Size size;
   final String title;
   final String releaseDate;
   final String directedBy;
+  final String? imageUrl;
+  final String? heroTag;
 
-  const MovieInfoScreen({Key? key, required this.size, required this.title, required this.releaseDate, required this.directedBy}) : super(key: key);
+  const MovieInfoScreen({
+    super.key,
+    required this.size,
+    required this.title,
+    required this.releaseDate,
+    required this.directedBy,
+    this.imageUrl,
+    this.heroTag,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: size.height * 0.13,
-      width: size.width * 0.67,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: AppPadding.p16),
-            child: Image.asset(Constants.noImageFound, height: size.height * 0.1),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppPadding.p12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                subtitleText(title, textSize: TextSize.s18),
-                subtitleText("${Constants.releaseDate} $releaseDate", textSize: TextSize.s12),
-                subtitleText("${Constants.directedBy} $directedBy", textSize: TextSize.s12)
-              ],
+          _buildPoster(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoRow(Icons.movie_creation_outlined, directedBy),
+                  const SizedBox(height: 6),
+                  _buildInfoRow(Icons.calendar_today_outlined, releaseDate),
+                ],
+              ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.favorite),
-            onPressed: () {},
-          )
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+          ),
         ],
       ),
-      margin: const EdgeInsets.symmetric(horizontal: AppMargin.m16, vertical: 8),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(AppMargin.m16), color: Colors.transparent.withOpacity(0.6)),
+    );
+  }
+
+  Widget _buildPoster() {
+    final imageWidget = StarWarsImage(
+      url: imageUrl,
+      placeholderIcon: Icons.movie_filter_outlined,
+      height: 150,
+      width: 100,
+      borderRadius: 0, // Card will handle clipping
+    );
+
+    if (heroTag != null) {
+      return Hero(tag: heroTag!, child: imageWidget);
+    }
+    return imageWidget;
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: Colors.amber),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -33,7 +33,7 @@ class StarWarsRepositoryImpl implements StarWarsRepository {
       final response = await localDatasource.getCharacters(remoteId);
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 }

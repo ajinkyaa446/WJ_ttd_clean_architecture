@@ -8,10 +8,10 @@ import '../../../../commons/widgets/widget.dart';
 class CharacterInfo extends StatefulWidget {
   final CharacterModels info;
 
-  const CharacterInfo({Key? key, required this.info}) : super(key: key);
+  const CharacterInfo({super.key, required this.info});
 
   @override
-  _CharacterInfoState createState() => _CharacterInfoState();
+  State<CharacterInfo> createState() => _CharacterInfoState();
 }
 
 class _CharacterInfoState extends State<CharacterInfo> {

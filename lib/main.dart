@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_assignment/core/storage/star_war_database.dart';
 
-import 'app/my_App.dart';
+import 'app/my_app.dart';
 import 'injection_container.dart';
 
 // part 'main.main.dart';
