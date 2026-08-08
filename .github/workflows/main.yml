@@ -118,14 +118,44 @@ jobs:
       - run: flutter pub get
       - run: flutter precache --ios
       - run: flutter build ios --release --no-codesign
-      - name: Archive iOS app
+      - name: Create iOS archive
         run: |
           mkdir -p build/ios-artifacts
-          ditto -c -k --sequesterRsrc --keepParent build/ios/iphoneos/Runner.app build/ios-artifacts/Runner.app.zip
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/ios-artifacts/Runner.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Export iOS IPA
+        run: |
+          cat > ExportOptions.plist <<'EOF'
+          <?xml version="1.0" encoding="UTF-8" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>teamID</key>
+            <string></string>
+            <key>destination</key>
+            <string>export</string>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath build/ios-artifacts/Runner.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/ios-artifacts
       - uses: actions/upload-artifact@v4
         with:
           name: ios-app
-          path: build/ios-artifacts/Runner.app.zip
+          path: build/ios-artifacts/*.ipa
       - name: upload iOS artifact to Firebase App Distribution
         env:
           FIREBASE_TOKEN: ${{ secrets.TOKEN }}
@@ -133,7 +163,7 @@ jobs:
           FIREBASE_GROUPS: app_QA_team
         run: |
           npm install -g firebase-tools
-          firebase appdistribution:distribute build/ios-artifacts/Runner.app.zip \
+          firebase appdistribution:distribute build/ios-artifacts/*.ipa \
             --app "$FIREBASE_APP_ID" \
             --token "$FIREBASE_TOKEN" \
             --groups "$FIREBASE_GROUPS"
