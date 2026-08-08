@@ -6,7 +6,7 @@ import 'dart:async' as _i4;
 
 import 'package:flutter_assignment/features/home_page/domain/repositories/star_wars_repository.dart'
     as _i2;
-import 'package:flutter_assignment/features/home_page/domain/usecases/collectDataFromLocal.dart'
+import 'package:flutter_assignment/features/home_page/domain/usecases/collect_data_from_local.dart'
     as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 

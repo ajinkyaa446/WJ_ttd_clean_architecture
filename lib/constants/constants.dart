@@ -15,7 +15,7 @@ class Constants {
   static const String releaseDate = "Release Date-";
   static const String directedBy = "Directed by-";
   static const String couldNotLoadCharacters = "Could not load characters";
-  static const String url = "https://swapi.dev/api/films/";
+  static const String url = "https://swapi.info/api/films/";
   static const String appName = "Star War";
   static const String movies = "Movies";
   static const String characters = "Characters";
@@ -23,7 +23,7 @@ class Constants {
   static const String cacheFailureMessage = "No Cache Found";
 
   /// Database Constants
-  static const String databaseName = 'star_war.db';
+  static const String databaseName = 'star_war_v2.db';
   static const String tableNameMovies = 'MovieDetails';
   static const String tableNameResults = 'Results';
   static const String tableNameCharacterAPI = 'CharacterAPI';

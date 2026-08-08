@@ -3,7 +3,7 @@ import 'package:flutter_assignment/features/character_page/domain/usecases/chara
 import 'package:flutter_assignment/features/character_page/presentation/cubit/character_list_cubit.dart';
 import 'package:flutter_assignment/features/home_page/data/repositories/star_war_repository_impl.dart';
 import 'package:flutter_assignment/features/home_page/domain/repositories/star_wars_repository.dart';
-import 'package:flutter_assignment/features/home_page/domain/usecases/collectDataFromAPI.dart';
+import 'package:flutter_assignment/features/home_page/domain/usecases/collect_data_from_api.dart';
 import 'package:flutter_assignment/features/home_page/presentation/cubit/movie_list_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -13,13 +13,13 @@ import 'features/character_page/data/datasource/character_remote_datasource.dart
 import 'features/character_page/data/repositories/character_repository_impl.dart';
 import 'features/home_page/data/datasource/local_data_source.dart';
 import 'features/home_page/data/datasource/movies_remote_datasource.dart';
-import 'features/home_page/domain/usecases/collectDataFromLocal.dart';
+import 'features/home_page/domain/usecases/collect_data_from_local.dart';
 
 final serviceLocator = GetIt.instance;
 
 Future<void> init() async {
-  serviceLocator.registerFactory(() => http.Client);
-  serviceLocator.registerFactory(() => InternetConnectionChecker());
+  serviceLocator.registerFactory(() => http.Client());
+  serviceLocator.registerFactory(() => InternetConnectionChecker.instance);
 
   // Remote Data Source
   serviceLocator.registerLazySingleton<MoviesRemoteDatasource>(() => RemoteDataSourceImpl(client: http.Client()));

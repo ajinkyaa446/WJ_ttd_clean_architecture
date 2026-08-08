@@ -6,16 +6,12 @@ import 'character_list_state.dart';
 class CharacterListCubit extends Cubit<CharacterListState> {
   final CharacterUseCase _characterUseCase;
 
-  CharacterListCubit(this._characterUseCase) : super(const CharacterListState.Init());
+  CharacterListCubit(this._characterUseCase) : super(const CharacterListState.initial());
 
   Future getCharacterDetails(List<String> characters, int id) async {
     final result = await _characterUseCase(CharacterUsecaseParams(characters: characters, id: id));
-    result.fold((_) => emit(const CharacterListState.Error()), (result) {
-      if (result == null) {
-        emit(const CharacterListState.Init());
-      } else {
-        emit(CharacterListState.Loaded(result));
-      }
+    result.fold((_) => emit(const CharacterListState.error()), (result) {
+      emit(CharacterListState.loaded(result));
     });
   }
 }

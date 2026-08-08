@@ -6,11 +6,10 @@ part 'movie_list_state.g.dart';
 part 'movie_list_state.freezed.dart';
 
 @freezed
-class MovieListState with _$MovieListState {
-  const factory MovieListState() = _MovieListState;
-  const factory MovieListState.Empty() = _MovieListStateEmpty;
-  const factory MovieListState.Error() = _MovieListStateError;
-  const factory MovieListState.Loaded(StarWarMoviesModel response) =
+abstract class MovieListState with _$MovieListState {
+  const factory MovieListState.initial() = _MovieListStateEmpty;
+  const factory MovieListState.error() = _MovieListStateError;
+  const factory MovieListState.loaded(StarWarMoviesModel response) =
   _MovieListStateListReceived;
 
   factory MovieListState.fromJson(Map<String, dynamic> json) =>

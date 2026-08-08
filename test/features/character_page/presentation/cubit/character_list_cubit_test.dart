@@ -10,7 +10,7 @@ import 'package:mockito/mockito.dart';
 import '../../../../constants/test_constants.dart';
 import 'character_list_cubit_test.mocks.dart';
 
-@GenerateMocks([], customMocks: [MockSpec<CharacterUseCase>(as: #MockCharacterUsecase, returnNullOnMissingStub: true)])
+@GenerateMocks([], customMocks: [MockSpec<CharacterUseCase>(as: #MockCharacterUsecase)])
 void main() {
   late CharacterListCubit cubit;
   late MockCharacterUsecase mockCharacterUseCase;
@@ -31,23 +31,23 @@ void main() {
       act: (CharacterListCubit newCubit) async {
         await newCubit.getCharacterDetails(TestConstants.characterList, 1);
       },
-      expect: () => [CharacterListState.Loaded(TestConstants.characterModelList)],
+      expect: () => [CharacterListState.loaded(TestConstants.characterModelList)],
     );
 
-    // Cubit data Init test
+    // Cubit data initial test
     blocTest<CharacterListCubit, CharacterListState>(
       TestConstants.characterEmptyStateTest,
       build: () => cubit,
-      act: (newCubit) => newCubit.emit(const CharacterListState.Init()),
-      expect: () => <CharacterListState>[const CharacterListState.Init()],
+      act: (newCubit) => newCubit.emit(const CharacterListState.initial()),
+      expect: () => <CharacterListState>[const CharacterListState.initial()],
     );
 
-    // Cubit data Error test
+    // Cubit data error test
     blocTest<CharacterListCubit, CharacterListState>(
       TestConstants.characterStateErrorTest,
       build: () => cubit,
-      act: (newCubit) => newCubit.emit(const CharacterListState.Error()),
-      expect: () => <CharacterListState>[const CharacterListState.Error()],
+      act: (newCubit) => newCubit.emit(const CharacterListState.error()),
+      expect: () => <CharacterListState>[const CharacterListState.error()],
     );
   });
 }

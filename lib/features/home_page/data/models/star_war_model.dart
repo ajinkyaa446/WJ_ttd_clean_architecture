@@ -6,13 +6,8 @@ part 'star_war_model.freezed.dart';
 part 'star_war_model.g.dart';
 
 @freezed
-class StarWarMoviesModel with _$StarWarMoviesModel {
+abstract class StarWarMoviesModel with _$StarWarMoviesModel {
   const factory StarWarMoviesModel({required int count, required List<Results> results}) = _StarWarMoviesModel;
 
   factory StarWarMoviesModel.fromJson(Map<String, dynamic> json) => _$StarWarMoviesModelFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {'count': count, 'results': results};
-  }
 }

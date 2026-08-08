@@ -20,9 +20,9 @@ class DatabaseHelper {
   ///Initialization of the database object and table creation
   Future initDatabase() async {
     String dbPath = await getDatabasesPath();
-    String path = dbPath + "/" + Constants.databaseName;
+    String path = "$dbPath/${Constants.databaseName}";
     try {
-      return await openDatabase(path, onCreate: onCreate, version: 1);
+      return await openDatabase(path, onCreate: onCreate, version: 2);
     } catch (e) {
       throw Exception(e);
     }
@@ -31,6 +31,7 @@ class DatabaseHelper {
   /// Creating tables and executes database actions onCreate
   Future<void> onCreate(Database db, int version) async {
     await db.execute('CREATE TABLE ${Constants.tableNameMovies}(id INTEGER PRIMARY KEY AUTOINCREMENT, create_date STRING, count INTEGER )');
+    await db.execute('CREATE TABLE ${Constants.tableNameSpaciesAPI}(capi_id INTEGER PRIMARY KEY AUTOINCREMENT, api STRING)');
     await db.execute('CREATE TABLE ${Constants.tableNameCharacterAPI}(capi_id INTEGER PRIMARY KEY AUTOINCREMENT, api STRING, FK_results INTEGER,'
         'FOREIGN KEY(FK_results) REFERENCES ${Constants.tableNameResults}(result_id))');
 
@@ -39,9 +40,9 @@ class DatabaseHelper {
         'birth_year STRING,gender STRING, homeworld STRING, created STRING,edited STRING,url STRING,'
         'FK_character_id INTEGER,'
         'FOREIGN KEY(FK_character_id) REFERENCES ${Constants.tableNameResults}(result_id))');
-    await db.execute('CREATE TABLE ${Constants.tableNameResults}(result_id INTEGER PRIMARY KEY AUTOINCREMENT, title STRING,episode_id INTEGER,opening_crawl INTEGER,'
+    await db.execute('CREATE TABLE ${Constants.tableNameResults}(result_id INTEGER PRIMARY KEY AUTOINCREMENT, title STRING,episode_id INTEGER,opening_crawl STRING,'
         'director STRING, producer STRING,release_date STRING,created STRING,edited STRING,url STRING,FK_result INTEGER, FK_character INTEGER,'
-        ' FOREIGN KEY(FK_result) REFERENCES ${Constants.tableNameMovies}(id)'
+        ' FOREIGN KEY(FK_result) REFERENCES ${Constants.tableNameMovies}(id),'
         ' FOREIGN KEY(FK_character) REFERENCES ${Constants.tableNameSpaciesAPI}(capi_id))');
   }
 

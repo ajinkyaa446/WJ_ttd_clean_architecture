@@ -17,7 +17,7 @@ class LocalDatasourceImpl implements MoviesLocalDatasource {
       }
       return characters;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 }

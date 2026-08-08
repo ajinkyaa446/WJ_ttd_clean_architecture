@@ -28,7 +28,7 @@ class RemoteDataSourceImpl implements MoviesRemoteDatasource {
     // Checking the API and collect the response by converting json
     try {
       List<Map> moviesResult = await DatabaseHelper.instance.getAllMovies();
-      if (moviesResult.isEmpty || moviesResult.length == 0) {
+      if (moviesResult.isEmpty) {
         return await APIServices().fetchAllMovies(url);
       } else {
         /// Collecting data from the local database
