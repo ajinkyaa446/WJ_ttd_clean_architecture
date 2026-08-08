@@ -7,8 +7,7 @@ on:
       - develop
 
 jobs:
-  build:
-
+  build-android:
     runs-on: ubuntu-latest
 
     steps:
@@ -75,3 +74,55 @@ jobs:
           token: ${{secrets.TOKEN}}
           groups: app_QA_team
           file: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare firebase options
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS }}
+        run: |
+          mkdir -p lib
+          backup_file=lib/firebase_options.dart
+          if [ -f "$backup_file" ]; then
+            cp "$backup_file" "$backup_file.bak"
+          fi
+
+          if [ -n "$FIREBASE_OPTIONS_DART" ]; then
+            printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+            echo "Wrote firebase_options.dart from secret"
+          else
+            echo "FIREBASE_OPTIONS secret not set; using repository version"
+          fi
+
+          if grep -q "class DefaultFirebaseOptions" lib/firebase_options.dart && grep -q "currentPlatform" lib/firebase_options.dart; then
+            echo "firebase_options.dart looks valid"
+          else
+            if [ -f "$backup_file.bak" ]; then
+              cp "$backup_file.bak" "$backup_file"
+              echo "Secret content was invalid; restored repository firebase_options.dart"
+            else
+              echo "Secret content was invalid and no backup was available" >&2
+              exit 1
+            fi
+          fi
+
+          test -f lib/firebase_options.dart && echo "firebase_options.dart exists" || { echo "firebase_options.dart missing"; exit 1; }
+          rm -f "$backup_file.bak"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+      - run: flutter pub get
+      - run: flutter precache --ios
+      - run: flutter build ios --release --no-codesign
+      - name: Archive iOS app
+        run: |
+          mkdir -p build/ios-artifacts
+          ditto -c -k --sequesterRsrc --keepParent build/ios/iphoneos/Runner.app build/ios-artifacts/Runner.app.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-app
+          path: build/ios-artifacts/Runner.app.zip

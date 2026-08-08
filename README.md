@@ -10,7 +10,7 @@ This project demonstrates:
 - Local SQLite storage for cached data
 - Remote API integration for Star Wars movie and character data
 - Firebase initialization and Firebase options configuration
-- GitHub Actions workflow for Android APK build and distribution
+- GitHub Actions workflow for Android APK and iOS app builds
 
 ## Project Structure
 
@@ -20,7 +20,8 @@ This project demonstrates:
 - `lib/core/` - Shared infrastructure, storage, and error handling
 - `lib/firebase_options.dart` - Firebase configuration for supported platforms
 - `android/` - Android project configuration
-- `.github/workflows/main.yml` - CI/CD workflow for building and distributing the APK
+- `ios/` - iOS project configuration and app metadata
+- `.github/workflows/main.yml` - CI/CD workflow for building Android and iOS artifacts
 
 ## Tech Stack
 
@@ -60,11 +61,18 @@ Build an Android APK locally:
 flutter build apk --release
 ```
 
+Build an iOS app locally:
+
+```bash
+flutter build ios --release --no-codesign
+```
+
 ## CI/CD
 
 The repository includes a GitHub Actions workflow that:
 - checks out the project
 - sets up Java and Flutter
 - prepares Firebase configuration files
-- builds a release APK
-- uploads the artifact for distribution
+- builds a release Android APK
+- builds a release iOS app bundle
+- uploads both artifacts for distribution or download
