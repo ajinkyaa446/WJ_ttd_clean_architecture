@@ -74,103 +74,103 @@ jobs:
           token: ${{secrets.TOKEN}}
           groups: app_QA_team
           file: build/app/outputs/flutter-apk/app-release.apk
-
-  build-ios:
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Prepare firebase options
-        env:
-          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS }}
-        run: |
-          mkdir -p lib
-          backup_file=lib/firebase_options.dart
-          if [ -f "$backup_file" ]; then
-            cp "$backup_file" "$backup_file.bak"
-          fi
-
-          if [ -n "$FIREBASE_OPTIONS_DART" ]; then
-            printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
-            echo "Wrote firebase_options.dart from secret"
-          else
-            echo "FIREBASE_OPTIONS secret not set; using repository version"
-          fi
-
-          if grep -q "class DefaultFirebaseOptions" lib/firebase_options.dart && grep -q "currentPlatform" lib/firebase_options.dart; then
-            echo "firebase_options.dart looks valid"
-          else
-            if [ -f "$backup_file.bak" ]; then
-              cp "$backup_file.bak" "$backup_file"
-              echo "Secret content was invalid; restored repository firebase_options.dart"
-            else
-              echo "Secret content was invalid and no backup was available" >&2
-              exit 1
-            fi
-          fi
-
-          test -f lib/firebase_options.dart && echo "firebase_options.dart exists" || { echo "firebase_options.dart missing"; exit 1; }
-          rm -f "$backup_file.bak"
-
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-      - run: flutter pub get
-      - run: flutter precache --ios
-      
-      - name: Setup iOS signing
-        env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          
-          # Import certificate
-          if [ -n "$APPLE_CERTIFICATE" ]; then
-            echo "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
-            security import certificate.p12 -k ~/Library/Keychains/login.keychain-db -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-            rm certificate.p12
-            echo "Certificate imported successfully"
-          fi
-          
-          # Import provisioning profile
-          if [ -n "$PROVISIONING_PROFILE" ]; then
-            echo "$PROVISIONING_PROFILE" | base64 --decode > profile.mobileprovision
-            cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-            rm profile.mobileprovision
-            echo "Provisioning profile imported successfully"
-          fi
-      
-      - run: flutter build ios --release
-      
-      - name: Build iOS IPA
-        run: |
-          mkdir -p build/ios-release
-          cd ios
-          xcodebuild -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -derivedDataPath ../build/ios/release \
-            -arch arm64 \
-            -allowProvisioningUpdates \
-            archive -archivePath ../build/ios/release/Runner.xcarchive
-          
-          xcodebuild -exportArchive \
-            -archivePath ../build/ios/release/Runner.xcarchive \
-            -exportOptionsPlist ExportOptions.plist \
-            -exportPath ../build/ios-release
-          cd ..
-      
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ios-app
-          path: build/ios-release/flutter_assignment.ipa
-      
-      - name: Upload iOS to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ secrets.IOS_APPID }}
-          token: ${{ secrets.TOKEN }}
-          groups: app_QA_team
-          file: build/ios-release/flutter_assignment.ipa
+#
+#  build-ios:
+#    runs-on: macos-latest
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Prepare firebase options
+#        env:
+#          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS }}
+#        run: |
+#          mkdir -p lib
+#          backup_file=lib/firebase_options.dart
+#          if [ -f "$backup_file" ]; then
+#            cp "$backup_file" "$backup_file.bak"
+#          fi
+#
+#          if [ -n "$FIREBASE_OPTIONS_DART" ]; then
+#            printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+#            echo "Wrote firebase_options.dart from secret"
+#          else
+#            echo "FIREBASE_OPTIONS secret not set; using repository version"
+#          fi
+#
+#          if grep -q "class DefaultFirebaseOptions" lib/firebase_options.dart && grep -q "currentPlatform" lib/firebase_options.dart; then
+#            echo "firebase_options.dart looks valid"
+#          else
+#            if [ -f "$backup_file.bak" ]; then
+#              cp "$backup_file.bak" "$backup_file"
+#              echo "Secret content was invalid; restored repository firebase_options.dart"
+#            else
+#              echo "Secret content was invalid and no backup was available" >&2
+#              exit 1
+#            fi
+#          fi
+#
+#          test -f lib/firebase_options.dart && echo "firebase_options.dart exists" || { echo "firebase_options.dart missing"; exit 1; }
+#          rm -f "$backup_file.bak"
+#
+#      - uses: subosito/flutter-action@v2
+#        with:
+#          channel: "stable"
+#      - run: flutter pub get
+#      - run: flutter precache --ios
+#
+#      - name: Setup iOS signing
+#        env:
+#          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+#          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+#          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+#        run: |
+#          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+#
+#          # Import certificate
+#          if [ -n "$APPLE_CERTIFICATE" ]; then
+#            echo "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
+#            security import certificate.p12 -k ~/Library/Keychains/login.keychain-db -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+#            rm certificate.p12
+#            echo "Certificate imported successfully"
+#          fi
+#
+#          # Import provisioning profile
+#          if [ -n "$PROVISIONING_PROFILE" ]; then
+#            echo "$PROVISIONING_PROFILE" | base64 --decode > profile.mobileprovision
+#            cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+#            rm profile.mobileprovision
+#            echo "Provisioning profile imported successfully"
+#          fi
+#
+#      - run: flutter build ios --release
+#
+#      - name: Build iOS IPA
+#        run: |
+#          mkdir -p build/ios-release
+#          cd ios
+#          xcodebuild -workspace Runner.xcworkspace \
+#            -scheme Runner \
+#            -configuration Release \
+#            -derivedDataPath ../build/ios/release \
+#            -arch arm64 \
+#            -allowProvisioningUpdates \
+#            archive -archivePath ../build/ios/release/Runner.xcarchive
+#
+#          xcodebuild -exportArchive \
+#            -archivePath ../build/ios/release/Runner.xcarchive \
+#            -exportOptionsPlist ExportOptions.plist \
+#            -exportPath ../build/ios-release
+#          cd ..
+#
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: ios-app
+#          path: build/ios-release/flutter_assignment.ipa
+#
+#      - name: Upload iOS to Firebase App Distribution
+#        uses: wzieba/Firebase-Distribution-Github-Action@v1
+#        with:
+#          appId: ${{ secrets.IOS_APPID }}
+#          token: ${{ secrets.TOKEN }}
+#          groups: app_QA_team
+#          file: build/ios-release/flutter_assignment.ipa
