@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.flutter_assignment">
+    package="com.ajinkya.flutterAssignment">
    <application
         android:label="flutter_assignment"
         android:name="${applicationName}"

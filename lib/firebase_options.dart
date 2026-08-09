@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1095074310562',
     projectId: 'distributionfirebase-58728',
     storageBucket: 'distributionfirebase-58728.firebasestorage.app',
-    iosBundleId: 'com.example.flutterAssignment',
+    iosBundleId: 'com.ajinkya.flutterAssignment',
   );
 }
