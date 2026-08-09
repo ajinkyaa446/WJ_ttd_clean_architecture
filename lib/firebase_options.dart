@@ -51,15 +51,14 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBJd8bHiZNbPMXpQoUvysA2lrcCouXOtzg',
-    appId: '1:1095074310562:android:724951b3407e2dc3adaafb',
+    appId: '1:1095074310562:android:8f13da44a4ec87c1adaafb',
     messagingSenderId: '1095074310562',
     projectId: 'distributionfirebase-58728',
     storageBucket: 'distributionfirebase-58728.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDRBn-Xz3fjKasmPVgMAH1qFAJfEWwWzmA',
-    appId: '1:1095074310562:ios:c27f98822c6b3ba7adaafb',
+    appId: '1:1095074310562:ios:6c3ad86c9c438c05adaafb',
     messagingSenderId: '1095074310562',
     projectId: 'distributionfirebase-58728',
     storageBucket: 'distributionfirebase-58728.firebasestorage.app',

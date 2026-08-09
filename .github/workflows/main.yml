@@ -117,13 +117,60 @@ jobs:
           channel: "stable"
       - run: flutter pub get
       - run: flutter precache --ios
-      - run: flutter build ios --release --no-codesign
-      - name: Build iOS app bundle
+      
+      - name: Setup iOS signing
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
         run: |
-          mkdir -p build/ios-artifacts
-          flutter build ios --release --no-codesign
-          cp -R build/ios/iphoneos/Runner.app build/ios-artifacts/Runner.app
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          
+          # Import certificate
+          if [ -n "$APPLE_CERTIFICATE" ]; then
+            echo "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
+            security import certificate.p12 -k ~/Library/Keychains/login.keychain-db -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+            rm certificate.p12
+            echo "Certificate imported successfully"
+          fi
+          
+          # Import provisioning profile
+          if [ -n "$PROVISIONING_PROFILE" ]; then
+            echo "$PROVISIONING_PROFILE" | base64 --decode > profile.mobileprovision
+            cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+            rm profile.mobileprovision
+            echo "Provisioning profile imported successfully"
+          fi
+      
+      - run: flutter build ios --release
+      
+      - name: Build iOS IPA
+        run: |
+          mkdir -p build/ios-release
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -derivedDataPath ../build/ios/release \
+            -arch arm64 \
+            -allowProvisioningUpdates \
+            archive -archivePath ../build/ios/release/Runner.xcarchive
+          
+          xcodebuild -exportArchive \
+            -archivePath ../build/ios/release/Runner.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath ../build/ios-release
+          cd ..
+      
       - uses: actions/upload-artifact@v4
         with:
           name: ios-app
-          path: build/ios-artifacts/Runner.app
+          path: build/ios-release/flutter_assignment.ipa
+      
+      - name: Upload iOS to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.IOS_APPID }}
+          token: ${{ secrets.TOKEN }}
+          groups: app_QA_team
+          file: build/ios-release/flutter_assignment.ipa
